@@ -29,7 +29,7 @@ const homePath = localizedPath(language);
           <span class="brand-mark" aria-hidden="true">k</span>
           <span class="brand-name">Kitchen<span>Notes</span></span>
         </a>
-        <nav class="main-nav" aria-label={t.navigation}>
+        <nav id="main-navigation" class="main-nav" aria-label={t.navigation}>
           <a href={`${homePath}#recipes`}>{t.recipes}</a>
           <a href={localizedPath(language, "/our-kitchen/")}>{t.kitchen}</a>
         </nav>
@@ -41,7 +41,7 @@ const homePath = localizedPath(language);
         <nav class="language-switcher" aria-label={t.language}>
           {languages.map((lang) => <a href={localizedPath(lang, pagePath)} lang={lang} hreflang={lang} aria-label={languageNames[lang]} aria-current={lang === language ? 'true' : undefined} data-language-link>{lang.toUpperCase()}</a>)}
         </nav>
-        <button class="menu-toggle" aria-label={t.menu} aria-expanded="false"><span></span><span></span></button>
+        <button class="menu-toggle" aria-label={t.menu} data-open-label={t.menu} data-close-label={t.closeMenu} aria-controls="main-navigation" aria-expanded="false"><span></span><span></span></button>
       </div>
     </header>
     <main id="main"><slot /></main>
@@ -60,17 +60,22 @@ const homePath = localizedPath(language);
         target.hash = window.location.hash;
         link.href = target.href;
       });
-      const menuButton = document.querySelector('.menu-toggle');
+      const menuButton = document.querySelector<HTMLButtonElement>('.menu-toggle');
       const nav = document.querySelector('.main-nav');
-      menuButton?.addEventListener('click', () => {
-        const open = menuButton.getAttribute('aria-expanded') === 'true';
-        menuButton.setAttribute('aria-expanded', String(!open));
-        nav?.classList.toggle('is-open', !open);
+      const setMenuOpen = (open: boolean) => {
+        menuButton?.setAttribute('aria-expanded', String(open));
+        const label = open ? menuButton?.dataset.closeLabel : menuButton?.dataset.openLabel;
+        if (label) menuButton?.setAttribute('aria-label', label);
+        nav?.classList.toggle('is-open', open);
+      };
+      menuButton?.addEventListener('click', () => setMenuOpen(menuButton.getAttribute('aria-expanded') !== 'true'));
+      nav?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => setMenuOpen(false)));
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && menuButton?.getAttribute('aria-expanded') === 'true') {
+          setMenuOpen(false);
+          menuButton.focus();
+        }
       });
-      nav?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
-        menuButton?.setAttribute('aria-expanded', 'false');
-        nav?.classList.remove('is-open');
-      }));
       const headerSearch = document.querySelector<HTMLInputElement>('#header-search-input');
       let searchEditScrollY = window.scrollY;
       const rememberSearchScroll = () => { searchEditScrollY = window.scrollY; };
