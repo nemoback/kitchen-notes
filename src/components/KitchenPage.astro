@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { assetPath } from '../paths';
 import { messages, localizedPath, type Language } from '../i18n';
 interface Props { language: Language; }
 const { language } = Astro.props;
@@ -20,7 +21,7 @@ const t = messages[language];
         <a class="kitchen-link" href={`${localizedPath(language)}#recipes`}>{t.browseOurs} <span aria-hidden="true">→</span></a>
       </div>
       <figure class="kitchen-photo">
-        <img src="/images/our-kitchen-family.jpg" alt={t.familyAlt} fetchpriority="high" />
+        <img src={assetPath("/images/our-kitchen-family.jpg")} alt={t.familyAlt} fetchpriority="high" />
         <figcaption>{t.familyCaption}</figcaption>
       </figure>
     </section>

@@ -6,7 +6,7 @@ Last updated: 2026-10-11. Read this together with `AGENTS.md` before working on 
 
 KitchenNotes is a polished recipe discovery website with an editorial food magazine feel. The user wants easy recipe authoring in Markdown and a professional, responsive design. Markdown stores content; Astro, HTML, CSS, and small browser scripts provide the website. No backend, accounts, database, or external runtime services are currently needed.
 
-The private source repository is https://github.com/nemoback/kitchen-notes. GitHub is the source of version history. Use descriptive branches, commits, and preferably pull requests. Do not merge or deploy without authorization. Do not recreate local backup folders: the user explicitly requested their removal after GitHub onboarding.
+The source repository is https://github.com/nemoback/kitchen-notes. The user authorized making it public on 2026-10-11 to use free GitHub Pages. GitHub is the source of version history. Use descriptive branches, commits, and preferably pull requests. Do not merge or deploy without authorization. Do not recreate local backup folders: the user explicitly requested their removal after GitHub onboarding.
 
 ## Design decisions and history
 
@@ -26,6 +26,8 @@ The private source repository is https://github.com/nemoback/kitchen-notes. GitH
 ### Search
 
 There is exactly one search field, in the header. English placeholder: “Find a recipe or ingredient”; Czech and Russian equivalents are in `src/i18n.ts`.
+
+The user requested that desktop search sit close to the language buttons. Keep these controls together with the header's normal gap; mobile search occupies its own full-width row.
 
 The user initially requested live results, then explicitly reversed that decision. **Search runs only on Enter/form submission.** Do not restore live filtering while typing, a suggestions dropdown, a second search field in the collection, or navigation triggered by deleting text.
 
@@ -110,3 +112,11 @@ GitHub onboarding established `main` at commit `910205e98d5c61cc4ac34d5106e53e79
 Connected GitHub tools work in this environment, while terminal HTTPS Git may lack credentials and SSH may lack a trusted host key. Prefer the connected tools when needed; do not read credentials, weaken SSH/certificate checks, or invent authentication. If local commit SHAs differ from a connector-created commit, be explicit about remote branch tracking rather than silently claiming they are identical.
 
 Ignore generated build output, `.astro`, `node_modules`, backups, version snapshots, preview captures, credentials, and local environment files. Keep source, content, assets, documentation, configuration and lockfiles in Git. Do not delete or overwrite unrelated user changes.
+
+## GitHub Pages hosting (2026-10-11)
+
+The user requested free hosting and explicitly chose a public repository. Target: https://nemoback.github.io/kitchen-notes/. GitHub Actions deployment is configured in `.github/workflows/deploy.yml` for pushes to `main` or manual runs; repository Pages source must be GitHub Actions. See the hosting task/Actions run for the actual publication status.
+
+Astro's `SITE_URL` defaults to `https://nemoback.github.io`; `SITE_BASE_PATH` defaults to `/` for local development and is `/kitchen-notes/` in the deploy workflow. `src/paths.ts` supplies base-aware image/link helpers and base removal for language switching. Public font references are bundled and rebased by Vite. Recipe Markdown remains portable with `/images/...` paths. Production recipe JSON-LD and alternate language metadata use absolute URLs.
+
+Future commits to `main` deploy automatically. This authorization applies to the requested first publication; follow the user's instructions for later merges/deployments. Do not switch visibility back or change the hosting address without discussing it.
