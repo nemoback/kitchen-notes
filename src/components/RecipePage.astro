@@ -1,0 +1,381 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { messages, localizedPath, categoryLabel } from '../i18n';
+interface Props { recipe: CollectionEntry<'recipes'>; }
+const { recipe } = Astro.props;
+const { Content } = await render(recipe);
+const { title, description, image, imageAlt, category, tags, prepTime, cookTime, ingredients, instructions, instructionImages, language } = recipe.data;
+const t = messages[language];
+const labels = {
+  home: t.home, recipes: t.recipes, prep: t.prep, cook: t.cook, total: t.total, minutes: t.minutes,
+  caption: t.madeToShare, gather: t.gather, ingredients: t.ingredients, tip: t.ingredientTip,
+  takeTime: t.takeTime, method: t.method, steps: t.steps, endnote: t.endnote,
+  keepGoing: t.keepGoing, more: t.more, browse: t.browseAll,
+};
+const recipeJsonLd = {
+  '@context': 'https://schema.org', '@type': 'Recipe', name: title, description, image,
+  inLanguage: language, recipeCategory: categoryLabel(language, category), prepTime: `PT${prepTime}M`, cookTime: `PT${cookTime}M`,
+  recipeIngredient: ingredients.map((i) => `${i.amount ?? ''} ${i.unit ?? ''} ${i.item}`.trim()),
+  recipeInstructions: instructions.map((text, i) => ({ '@type': 'HowToStep', position: i + 1, text, ...(instructionImages?.[i] ? { image: instructionImages[i].image } : {}) })),
+};
+---
+<BaseLayout language={language} title={`${title} — KitchenNotes`} description={description}>
+  <script type="application/ld+json" set:html={JSON.stringify(recipeJsonLd)} slot="head" />
+  <div class="recipe-page" lang={language}>
+    <div class="recipe-breadcrumb section-wrap"><a href={localizedPath(language)}>{labels.home}</a><span>/</span><a href={`${localizedPath(language)}#recipes`}>{labels.recipes}</a><span>/</span><span>{title}</span></div>
+    <section class="recipe-hero section-wrap">
+      <div class="recipe-heading"><div class="eyebrow">{categoryLabel(language, category)} <span class="heading-dot">·</span> {tags.map(tag => categoryLabel(language, tag)).join(' / ')}</div><h1>{title}</h1><p>{description}</p><div class="recipe-time-row"><div><span class="time-icon">◷</span><span>{labels.prep}</span><strong>{prepTime} {labels.minutes}</strong></div><span class="time-divider"></span><div><span class="time-icon">◴</span><span>{labels.cook}</span><strong>{cookTime} {labels.minutes}</strong></div><span class="time-divider"></span><div><span class="time-icon">✳</span><span>{labels.total}</span><strong>{prepTime + cookTime} {labels.minutes}</strong></div></div></div>
+      <div class="recipe-hero-image"><img src={image} alt={imageAlt} fetchpriority="high" /><span class="image-caption">{labels.caption}</span></div>
+    </section>
+    <div class="recipe-content section-wrap">
+      <aside class="ingredients-panel" aria-labelledby="ingredients-title"><div class="panel-heading"><div><div class="eyebrow">{labels.gather}</div><h2 id="ingredients-title">{labels.ingredients}</h2></div><span class="ingredient-spark" aria-hidden="true">✳</span></div>
+        <ul class="ingredient-list">{ingredients.map((ingredient) => <li><span class="ingredient-check" aria-hidden="true">✓</span><span>{ingredient.amount != null ? `${new Intl.NumberFormat(language).format(ingredient.amount)} ${ingredient.unit ?? ''} ` : ''}{ingredient.item}</span></li>)}</ul>
+        <div class="ingredient-tip"><span>✳</span><p>{labels.tip}</p></div>
+      </aside>
+      <article class="method-panel"><div class="panel-heading method-heading"><div><div class="eyebrow">{labels.takeTime}</div><h2>{labels.method}</h2></div><span class="method-count">{String(instructions.length).padStart(2, '0')} {labels.steps}</span></div>
+        <div class="recipe-prose"><Content /></div>
+        <ol class="method-list">{instructions.map((instruction, i) => <li><span class="step-number">{String(i + 1).padStart(2, '0')}</span><div class="method-step"><p>{instruction}</p>{instructionImages?.[i] && <img class="step-photo" src={instructionImages[i].image} alt={instructionImages[i].imageAlt} loading="lazy" decoding="async" width="690" height="430" />}</div></li>)}</ol>
+        <div class="recipe-endnote"><span aria-hidden="true">✳</span><p>{labels.endnote}</p></div>
+      </article>
+    </div>
+    <section class="more-recipes section-wrap"><div><div class="eyebrow">{labels.keepGoing}</div><h2>{labels.more}</h2></div><a href={`${localizedPath(language)}#recipes`} class="back-recipes">{labels.browse} <span>→</span></a></section>
+  </div>
+</BaseLayout>
+<style>
+.recipe-page {
+  padding-bottom: 76px;
+}
+.recipe-breadcrumb {
+  display: flex;
+  gap: 11px;
+  padding-top: 28px;
+  padding-bottom: 25px;
+  color: var(--muted);
+  font-size: 10px;
+}
+.recipe-breadcrumb a:hover {
+  color: var(--brand);
+}
+.recipe-breadcrumb span:last-child {
+  color: #655f6c;
+}
+.recipe-hero {
+  display: grid;
+  grid-template-columns: 0.86fr 1.14fr;
+  gap: 54px;
+  align-items: center;
+  padding-top: 20px;
+  padding-bottom: 56px;
+}
+.recipe-heading {
+  padding: 12px 0;
+}
+.recipe-heading .eyebrow {
+  font-size: 9px;
+}
+.heading-dot {
+  color: var(--accent);
+  padding: 0 3px;
+}
+.recipe-heading h1 {
+  font: 500 clamp(48px, 6vw, 76px)/1.04 var(--serif);
+  letter-spacing: -2.8px;
+  margin: 20px 0 16px;
+  color: var(--brand);
+}
+.recipe-heading > p {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--muted);
+  max-width: 420px;
+  margin: 0;
+}
+.recipe-time-row {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  margin-top: 30px;
+}
+.recipe-time-row > div {
+  display: grid;
+  grid-template-columns: 19px auto;
+  column-gap: 5px;
+  align-items: center;
+}
+.recipe-time-row > div > span:nth-child(2) {
+  font-size: 8px;
+  letter-spacing: 1px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.recipe-time-row strong {
+  grid-column: 2;
+  font: 500 14px var(--serif);
+  color: var(--ink);
+}
+.time-icon {
+  grid-row: span 2;
+  color: var(--accent);
+  font-size: 15px;
+}
+.time-divider {
+  height: 28px;
+  width: 1px;
+  background: var(--line);
+}
+.recipe-hero-image {
+  position: relative;
+  height: 420px;
+  overflow: hidden;
+  border-radius: var(--card-radius);
+}
+.recipe-hero-image img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  display: block;
+}
+.image-caption {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: var(--paper);
+  padding: 10px 13px;
+  color: var(--brand);
+  font-size: 8px;
+  letter-spacing: 1.3px;
+  font-weight: 700;
+}
+.recipe-content {
+  display: grid;
+  grid-template-columns: 0.7fr 1.3fr;
+  gap: 85px;
+  padding-top: 48px;
+  padding-bottom: 80px;
+  border-top: 1px solid var(--line);
+}
+.ingredients-panel {
+  align-self: start;
+  background: var(--soft-panel);
+  padding: 26px 27px 24px;
+}
+.panel-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.panel-heading .eyebrow {
+  font-size: 9px;
+}
+.panel-heading h2,
+.more-recipes h2 {
+  font: 500 32px var(--serif);
+  letter-spacing: -0.8px;
+  margin: 7px 0 0;
+  color: var(--brand);
+}
+.ingredient-spark {
+  color: var(--brand-light);
+  font-size: 25px;
+}
+.ingredient-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.ingredient-list li {
+  display: flex;
+  gap: 10px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+  line-height: 1.55;
+  color: #29242f;
+}
+.ingredient-check {
+  color: var(--accent);
+  font-size: 11px;
+  flex-shrink: 0;
+}
+.ingredient-tip {
+  display: flex;
+  gap: 12px;
+  padding: 17px 13px;
+  margin-top: 22px;
+  background: var(--soft-accent);
+}
+.ingredient-tip span {
+  color: var(--accent);
+  font-size: 18px;
+}
+.ingredient-tip p {
+  margin: 0;
+  font: italic 13px/1.55 var(--serif);
+  color: var(--brand);
+}
+.method-heading {
+  padding-bottom: 19px;
+  border-bottom: 1px solid var(--line);
+}
+.method-count {
+  font-size: 8px;
+  letter-spacing: 1.4px;
+  color: var(--muted);
+  font-weight: 700;
+}
+.recipe-prose {
+  font: italic 15px/1.8 var(--serif);
+  color: var(--muted);
+  margin: 19px 0 22px;
+}
+.recipe-prose p {
+  margin: 0;
+}
+.method-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.method-list li {
+  display: grid;
+  grid-template-columns: 43px 1fr;
+  gap: 13px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
+}
+.method-step {
+  min-width: 0;
+}
+.step-photo {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: 18px;
+  border-radius: var(--card-radius);
+}
+.step-number {
+  font: 500 17px var(--serif);
+  color: var(--accent);
+  padding-top: 1px;
+}
+.method-list p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.8;
+  color: #655f6c;
+}
+.recipe-endnote {
+  display: flex;
+  gap: 13px;
+  align-items: center;
+  margin-top: 28px;
+  padding: 17px;
+  background: var(--soft-panel);
+}
+.recipe-endnote span {
+  font-size: 19px;
+  color: var(--accent);
+}
+.recipe-endnote p {
+  font: italic 14px var(--serif);
+  color: var(--brand);
+  margin: 0;
+}
+.more-recipes {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--line);
+  padding-top: 36px;
+}
+.more-recipes h2 {
+  font-size: 30px;
+}
+.back-recipes {
+  font-size: 11px;
+  color: var(--brand);
+  font-weight: 700;
+  border-bottom: 1px solid var(--brand-light);
+  padding-bottom: 7px;
+}
+.back-recipes span {
+  color: var(--accent);
+  margin-left: 13px;
+  font-size: 15px;
+}
+@media (max-width: 900px) {
+  .recipe-hero {
+    gap: 30px;
+  }
+  .recipe-hero-image {
+    height: 350px;
+  }
+  .recipe-content {
+    gap: 38px;
+    grid-template-columns: 0.8fr 1.2fr;
+  }
+}
+@media (max-width: 700px) {
+  .recipe-page {
+    padding-bottom: 54px;
+  }
+  .recipe-breadcrumb {
+    padding-top: 19px;
+    padding-bottom: 17px;
+    font-size: 9px;
+  }
+  .recipe-hero {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding-top: 8px;
+    padding-bottom: 35px;
+  }
+  .recipe-heading h1 {
+    font-size: 55px;
+    margin: 15px 0;
+  }
+  .recipe-heading > p {
+    font-size: 13px;
+  }
+  .recipe-time-row {
+    gap: 13px;
+    margin-top: 22px;
+  }
+  .recipe-hero-image {
+    height: 290px;
+  }
+  .recipe-content {
+    grid-template-columns: 1fr;
+    gap: 42px;
+    padding-top: 32px;
+    padding-bottom: 53px;
+  }
+  .ingredients-panel {
+    padding: 23px 21px;
+  }
+  .method-list li {
+    grid-template-columns: 34px 1fr;
+    gap: 10px;
+  }
+  .method-list p {
+    font-size: 12px;
+  }
+  .recipe-prose {
+    font-size: 14px;
+  }
+  .more-recipes {
+    gap: 15px;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .more-recipes h2 {
+    font-size: 27px;
+  }
+}
+.ingredients-panel,
+.ingredient-tip,
+.recipe-endnote {
+  border-radius: var(--card-radius);
+}
+</style>

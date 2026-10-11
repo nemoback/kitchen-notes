@@ -1,0 +1,585 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { messages, categoryLabel, localizedPath, type Language } from '../i18n';
+interface Props { language: Language; }
+const { language } = Astro.props;
+const t = messages[language];
+const recipes = await getCollection('recipes', ({ data }) => data.language === language);
+const featured = recipes.find((recipe) => recipe.data.featured) ?? recipes[0];
+const sortedRecipes = [...recipes].sort((a,b) => Number(b.data.featured)-Number(a.data.featured));
+const categories = ['All recipes', 'Breakfast', 'Lunch', 'Dinner', 'Dessert', 'Vegetarian', 'Quick'];
+---
+<BaseLayout language={language}>
+  <section class="hero section-wrap" aria-labelledby="hero-title">
+    <div class="hero-copy">
+      <div class="eyebrow">{t.heroEyebrow}</div>
+      <h1 id="hero-title">{t.heroOne}<br /><em>{t.heroTwo}</em><br /><em>{t.heroThree}</em></h1>
+      <p class="hero-intro">{t.heroIntro}</p>
+      <a class="hero-link" href="#recipes">{t.explore} <span aria-hidden="true">↓</span></a>
+      <div class="hero-note"><span class="note-star">✳</span><span>{t.noteOne}<br /><strong>{t.noteTwo}</strong></span></div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-photo-wrap"><img class="hero-photo" src={featured.data.image} alt={featured.data.imageAlt} fetchpriority="high" /></div>
+      <div class="hero-photo-label"><span>{t.weekTable}</span><span>014&nbsp; · &nbsp;{categoryLabel(language, featured.data.category).toUpperCase()}</span></div>
+      <div class="hero-caption"><span class="caption-line"></span><span>{t.caption}</span></div>
+    </div>
+  </section>
+  <section class="intro-strip">
+    <div class="section-wrap intro-inner"><span class="intro-kicker">{t.goodStuff}</span><p>{t.introOne} <em>{t.introTwo}</em></p><span class="intro-decoration" aria-hidden="true">✳</span></div>
+  </section>
+  <section class="recipes-section section-wrap" id="recipes" aria-labelledby="recipes-title">
+    <div class="collection-heading">
+      <div><div class="eyebrow">{t.favourite}</div><h2 id="recipes-title">{t.collectionTitle}</h2></div>
+      <p>{t.collectionIntro}</p>
+    </div>
+    <div class="collection-controls">
+      <div class="filter-list" role="group" aria-label={t.filterLabel}>
+        {categories.map((category, i) => <button class:list={['filter-chip', { active: i === 0 }]} data-filter={category} aria-pressed={i === 0 ? 'true' : 'false'}>{categoryLabel(language, category)}</button>)}
+      </div>
+    </div>
+    <p class="results-count" aria-live="polite">{t.countLabel} <span id="recipe-count">{recipes.length}</span></p>
+    <div class="recipe-grid" id="recipe-grid">
+      {sortedRecipes.map((recipe, index) => <a class="recipe-card" href={localizedPath(language, `/recipes/${recipe.data.translationKey}/`)} data-title={recipe.data.title.toLowerCase()} data-ingredients={recipe.data.ingredients.map(i=>i.item).join(' ').toLowerCase()} data-category={recipe.data.category} data-tags={recipe.data.tags.join(' ')} data-search-tags={recipe.data.tags.map(tag => categoryLabel(language, tag)).join(' ')} style={`--card-index:${index}`}>
+        <div class="card-image-wrap"><img src={recipe.data.image} alt={recipe.data.imageAlt} loading="lazy" /><span class="card-category">{categoryLabel(language, recipe.data.category)}</span><span class="card-arrow" aria-hidden="true">↗</span></div>
+        <div class="card-copy"><div class="card-meta"><span>{recipe.data.prepTime + recipe.data.cookTime} {t.minutes} {t.total}</span><span class="meta-dot">·</span><span>{categoryLabel(language, recipe.data.tags[0] ?? '').toUpperCase()}</span></div><h3>{recipe.data.title}</h3><p>{recipe.data.description}</p><div class="card-bottom"><span>{t.prep} {recipe.data.prepTime} {t.minutes} <i>·</i> {t.cook} {recipe.data.cookTime} {t.minutes}</span><span class="card-read">{t.getCooking} <b>→</b></span></div></div>
+      </a>)}
+    </div>
+    <div class="empty-state" id="empty-state" hidden><span>✳</span><h3>{t.emptyTitle}</h3><p>{t.emptyText}</p></div>
+  </section>
+  <section class="quote-band"><div class="quote-inner section-wrap"><span class="quote-mark">“</span><blockquote>{t.quoteOne}<br />{t.quoteTwo}</blockquote><span class="quote-credit">{t.quoteCredit}</span><span class="quote-flower" aria-hidden="true">✳</span></div></section>
+</BaseLayout>
+<style>
+.hero {
+  min-height: 620px;
+  display: grid;
+  grid-template-columns: 0.87fr 1.13fr;
+  align-items: center;
+  gap: 60px;
+  padding-top: 56px;
+  padding-bottom: 62px;
+}
+.hero-copy {
+  position: relative;
+  padding: 14px 0 16px;
+}
+.hero h1 {
+  font: 500 clamp(56px, 6.8vw, 88px)/0.99 var(--serif);
+  letter-spacing: -3.8px;
+  margin: 26px 0 23px;
+}
+.hero h1 em {
+  font-weight: 500;
+  color: var(--brand);
+}
+.hero-intro {
+  max-width: 340px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.85;
+  margin: 0 0 26px;
+}
+.hero-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 24px;
+  color: var(--brand);
+  font-size: 12px;
+  font-weight: 700;
+  border-bottom: 1px solid #cbbfd8;
+  padding-bottom: 8px;
+}
+.hero-link span {
+  color: var(--accent);
+  font-size: 17px;
+  transition: transform 0.2s;
+}
+.hero-link:hover span {
+  transform: translateY(3px);
+}
+.hero-note {
+  position: absolute;
+  bottom: -35px;
+  left: 0;
+  display: flex;
+  gap: 11px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.6;
+}
+.hero-note strong {
+  font-weight: 600;
+  color: var(--brand);
+}
+.note-star {
+  font-size: 24px;
+  color: var(--accent);
+}
+.hero-visual {
+  position: relative;
+  padding: 10px 30px 30px 0;
+}
+.hero-photo-wrap {
+  height: 462px;
+  overflow: hidden;
+  border-radius: var(--hero-shape);
+  position: relative;
+  background: #e1d9e7;
+}
+.hero-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 52%;
+  display: block;
+  filter: saturate(0.86);
+}
+.hero-photo-label {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 12px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.45px;
+  color: var(--muted);
+}
+.hero-caption {
+  position: absolute;
+  bottom: 49px;
+  left: -49px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  color: var(--muted);
+  font: italic 14px var(--serif);
+}
+.caption-line {
+  height: 42px;
+  width: 1px;
+  background: var(--accent);
+}
+.intro-strip {
+  background: var(--brand);
+  color: var(--brand-on);
+}
+.intro-inner {
+  height: 142px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.intro-kicker {
+  color: var(--brand-light);
+  font-size: 9px;
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+.intro-inner p {
+  font: 500 29px var(--serif);
+  margin: 0;
+}
+.intro-inner p em {
+  color: var(--brand-light);
+}
+.intro-decoration {
+  font-size: 36px;
+  color: var(--accent);
+}
+.recipes-section {
+  padding-top: 100px;
+  padding-bottom: 108px;
+}
+.collection-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  margin-bottom: 36px;
+}
+.collection-heading h2 {
+  font: 500 46px var(--serif);
+  letter-spacing: -1.5px;
+  margin: 12px 0 0;
+}
+.collection-heading > p {
+  max-width: 280px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.8;
+  margin: 0 0 6px;
+}
+.collection-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 17px 0 19px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.filter-list {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+.filter-chip {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  padding: 8px 13px;
+  border-radius: var(--pill-radius);
+  font-size: 11px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.filter-chip:hover {
+  border-color: #cbbfd8;
+  color: var(--brand);
+}
+.filter-chip.active {
+  background: var(--brand);
+  color: white;
+}
+.results-count {
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 0.3px;
+  margin: 20px 0 16px;
+}
+.recipe-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 38px 24px;
+}
+.recipe-card {
+  min-width: 0;
+  transition: transform 0.25s;
+}
+.recipe-card:hover {
+  transform: translateY(-4px);
+}
+.recipe-card[hidden] {
+  display: none;
+}
+.card-image-wrap {
+  height: 255px;
+  position: relative;
+  overflow: hidden;
+  background: #ebe5f1;
+  border-radius: var(--card-radius);
+}
+.card-image-wrap > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.55s;
+}
+.recipe-card:hover .card-image-wrap > img {
+  transform: scale(1.04);
+}
+.card-category {
+  position: absolute;
+  left: 13px;
+  top: 13px;
+  padding: 7px 10px;
+  background: #fffefaed;
+  color: var(--brand);
+  border-radius: var(--pill-radius);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+.card-arrow {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  background: var(--brand);
+  color: #fff;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  opacity: 0;
+  transform: translateY(5px);
+  transition: 0.2s;
+}
+.recipe-card:hover .card-arrow,
+.recipe-card:focus-visible .card-arrow {
+  opacity: 1;
+  transform: translateY(0);
+}
+.card-copy {
+  padding: 14px 2px 0;
+}
+.card-meta {
+  display: flex;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 1.1px;
+}
+.meta-dot {
+  color: var(--accent);
+}
+.card-copy h3 {
+  font: 500 25px/1.18 var(--serif);
+  letter-spacing: -0.4px;
+  margin: 10px 0 7px;
+}
+.card-copy > p {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 0;
+  min-height: 35px;
+}
+.card-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--line);
+  margin-top: 16px;
+  padding-top: 11px;
+  color: var(--muted);
+  font-size: 9px;
+}
+.card-bottom i {
+  font-style: normal;
+  color: var(--accent);
+  padding: 0 4px;
+}
+.card-read {
+  color: var(--brand);
+  font-weight: 700;
+}
+.card-read b {
+  font-size: 14px;
+  font-weight: 400;
+  margin-left: 5px;
+}
+.empty-state {
+  text-align: center;
+  padding: 65px 10px;
+  color: var(--muted);
+}
+.empty-state[hidden] {
+  display: none;
+}
+.empty-state > span {
+  color: var(--accent);
+  font-size: 28px;
+}
+.empty-state h3 {
+  font: 24px var(--serif);
+  color: var(--ink);
+  margin: 10px 0;
+}
+.empty-state p {
+  font-size: 12px;
+}
+.quote-band {
+  background: var(--soft-panel);
+}
+.quote-inner {
+  position: relative;
+  text-align: center;
+  padding-top: 74px;
+  padding-bottom: 72px;
+}
+.quote-mark {
+  font: 68px/0.5 var(--serif);
+  color: var(--accent);
+}
+.quote-inner blockquote {
+  font: 500 35px/1.32 var(--serif);
+  letter-spacing: -0.5px;
+  margin: 4px 0 20px;
+  color: var(--brand);
+}
+.quote-credit {
+  font-size: 8px;
+  letter-spacing: 2px;
+  font-weight: 700;
+  color: var(--brand);
+}
+.quote-flower {
+  position: absolute;
+  right: 12%;
+  top: 36%;
+  font-size: 54px;
+  color: var(--brand-light);
+  transform: rotate(-18deg);
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+@media (max-width: 950px) {
+  .hero {
+    gap: 28px;
+    min-height: 550px;
+  }
+  .hero-photo-wrap {
+    height: 400px;
+  }
+  .hero h1 {
+    font-size: clamp(48px, 6.7vw, 64px);
+    letter-spacing: -2.5px;
+  }
+  .recipe-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 700px) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    padding-top: 47px;
+    padding-bottom: 47px;
+  }
+  .hero h1 {
+    font-size: 66px;
+    letter-spacing: -2.8px;
+    margin: 20px 0;
+  }
+  .hero-intro {
+    font-size: 14px;
+    max-width: 360px;
+  }
+  .hero-note {
+    display: none;
+  }
+  .hero-visual {
+    padding: 0 16px 29px 0;
+  }
+  .hero-photo-wrap {
+    height: 340px;
+    border-radius: var(--hero-shape);
+  }
+  .hero-caption {
+    left: -22px;
+    bottom: 43px;
+    font-size: 12px;
+  }
+  .intro-inner {
+    height: 117px;
+  }
+  .intro-kicker {
+    font-size: 8px;
+  }
+  .intro-inner p {
+    font-size: 22px;
+  }
+  .intro-decoration {
+    font-size: 27px;
+  }
+  .recipes-section {
+    padding-top: 70px;
+    padding-bottom: 74px;
+  }
+  .collection-heading {
+    display: block;
+    margin-bottom: 24px;
+  }
+  .collection-heading h2 {
+    font-size: 39px;
+  }
+  .collection-heading > p {
+    margin: 12px 0 0;
+  }
+  .filter-list {
+    gap: 4px;
+  }
+  .filter-chip {
+    padding: 7px 10px;
+    font-size: 10px;
+  }
+  .recipe-grid {
+    grid-template-columns: 1fr;
+    gap: 31px;
+  }
+  .card-image-wrap {
+    height: 290px;
+  }
+  .card-copy h3 {
+    font-size: 27px;
+  }
+  .card-copy > p {
+    font-size: 12px;
+  }
+  .card-bottom {
+    font-size: 10px;
+  }
+  .quote-inner {
+    padding-top: 57px;
+    padding-bottom: 57px;
+  }
+  .quote-inner blockquote {
+    font-size: 28px;
+  }
+  .quote-flower {
+    right: 5%;
+    top: 37%;
+    font-size: 37px;
+    opacity: 0.55;
+  }
+}
+@media (min-width: 701px) and (max-width: 1100px) {
+  .filter-chip {
+    padding: 7px 9px;
+    font-size: 10px;
+  }
+  .card-image-wrap {
+    height: 220px;
+  }
+}
+</style>
+<script>
+  import { matchesRecipe } from '../scripts/recipe-filter.js';
+
+  const headerInput = document.querySelector<HTMLInputElement>('#header-search-input');
+  const cards = [...document.querySelectorAll<HTMLAnchorElement>('.recipe-card')];
+  const filters = [...document.querySelectorAll<HTMLButtonElement>('.filter-chip')];
+  const count = document.querySelector<HTMLSpanElement>('#recipe-count');
+  const empty = document.querySelector<HTMLDivElement>('#empty-state');
+  const recipeFilters = document.querySelector('.collection-controls');
+  let activeFilter = 'All recipes';
+  let activeSearch = '';
+  const update = () => {
+    if (!count || !empty) return;
+    const term = activeSearch;
+    let visible = 0;
+    cards.forEach((card) => {
+      card.hidden = !matchesRecipe(card.dataset, term, activeFilter);
+      if (!card.hidden) visible++;
+    });
+    count.textContent = String(visible);
+    empty.hidden = visible > 0;
+  };
+  const initialQuery = new URLSearchParams(window.location.search).get('q') ?? '';
+  if (initialQuery) {
+    if (headerInput) headerInput.value = initialQuery;
+    activeSearch = initialQuery.trim().toLowerCase();
+    update();
+    requestAnimationFrame(() => recipeFilters?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+  }
+  filters.forEach((button) => button.addEventListener('click', () => {
+    activeFilter = button.dataset.filter ?? 'All recipes';
+    filters.forEach((filter) => { const active = filter === button; filter.classList.toggle('active', active); filter.setAttribute('aria-pressed', String(active)); });
+    update();
+  }));
+</script>

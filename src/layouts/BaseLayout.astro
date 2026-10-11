@@ -1,0 +1,103 @@
+---
+import '../styles/global.css';
+import { messages, languages, languageNames, localizedPath, unlocalizedPath, type Language } from '../i18n';
+interface Props { title?: string; description?: string; language?: Language; }
+const { language = 'cs' } = Astro.props;
+const t = messages[language];
+const { title = t.siteTitle, description = t.siteDescription } = Astro.props;
+const pagePath = unlocalizedPath(Astro.url.pathname);
+const homePath = localizedPath(language);
+
+---
+<!doctype html>
+<html lang={language}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f6f2fa" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    {languages.map((lang) => <link rel="alternate" hreflang={lang} href={localizedPath(lang, pagePath)} />)}
+    <link rel="alternate" hreflang="x-default" href={localizedPath('cs', pagePath)} />
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{t.skip}</a>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href={homePath} aria-label={t.homeLabel}>
+          <span class="brand-mark" aria-hidden="true">k</span>
+          <span class="brand-name">Kitchen<span>Notes</span></span>
+        </a>
+        <nav class="main-nav" aria-label={t.navigation}>
+          <a href={`${homePath}#recipes`}>{t.recipes}</a>
+          <a href={localizedPath(language, "/our-kitchen/")}>{t.kitchen}</a>
+        </nav>
+        <form class="header-search" action={homePath} method="get" role="search">
+          <label class="sr-only" for="header-search-input">{t.search}</label>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 4.5 4.5"></path></svg>
+          <input id="header-search-input" type="search" name="q" placeholder={t.search} autocomplete="off" value={Astro.url.searchParams.get('q') ?? ''} />
+        </form>
+        <nav class="language-switcher" aria-label={t.language}>
+          {languages.map((lang) => <a href={localizedPath(lang, pagePath)} lang={lang} hreflang={lang} aria-label={languageNames[lang]} aria-current={lang === language ? 'true' : undefined} data-language-link>{lang.toUpperCase()}</a>)}
+        </nav>
+        <button class="menu-toggle" aria-label={t.menu} aria-expanded="false"><span></span><span></span></button>
+      </div>
+    </header>
+    <main id="main"><slot /></main>
+    <footer class="site-footer" id="about">
+      <div class="footer-top">
+        <a class="brand footer-brand" href={homePath} aria-label={t.homeLabel}><span class="brand-mark" aria-hidden="true">k</span><span class="brand-name">Kitchen<span>Notes</span></span></a>
+        <p>{t.footerOne}<br />{t.footerTwo}</p>
+        <a class="back-top" href="#main">{t.backTop}</a>
+      </div>
+      <div class="footer-bottom"><span>{t.footerNote}</span><span>© 2026 KitchenNotes</span></div>
+    </footer>
+    <script>
+      document.querySelectorAll<HTMLAnchorElement>('[data-language-link]').forEach((link) => {
+        const target = new URL(link.href);
+        target.search = window.location.search;
+        target.hash = window.location.hash;
+        link.href = target.href;
+      });
+      const menuButton = document.querySelector('.menu-toggle');
+      const nav = document.querySelector('.main-nav');
+      menuButton?.addEventListener('click', () => {
+        const open = menuButton.getAttribute('aria-expanded') === 'true';
+        menuButton.setAttribute('aria-expanded', String(!open));
+        nav?.classList.toggle('is-open', !open);
+      });
+      nav?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
+        menuButton?.setAttribute('aria-expanded', 'false');
+        nav?.classList.remove('is-open');
+      }));
+      const headerSearch = document.querySelector<HTMLInputElement>('#header-search-input');
+      let searchEditScrollY = window.scrollY;
+      const rememberSearchScroll = () => { searchEditScrollY = window.scrollY; };
+      const keepSearchPosition = () => {
+        const savedScrollY = searchEditScrollY;
+        let framesLeft = 45;
+        const keepPosition = () => {
+          if (Math.abs(window.scrollY - savedScrollY) > 1) {
+            const root = document.documentElement;
+            const previousScrollBehavior = root.style.scrollBehavior;
+            root.style.scrollBehavior = 'auto';
+            window.scrollTo(0, savedScrollY);
+            root.style.scrollBehavior = previousScrollBehavior;
+            return;
+          }
+          if (--framesLeft > 0) requestAnimationFrame(keepPosition);
+        };
+        requestAnimationFrame(keepPosition);
+      };
+      headerSearch?.addEventListener('pointerdown', rememberSearchScroll);
+      headerSearch?.addEventListener('keydown', (event) => {
+        if (event.key.length === 1 || ['Backspace', 'Delete', 'Escape'].includes(event.key)) {
+          rememberSearchScroll();
+          keepSearchPosition();
+        }
+      });
+      headerSearch?.addEventListener('input', keepSearchPosition);
+    </script>
+  </body>
+</html>

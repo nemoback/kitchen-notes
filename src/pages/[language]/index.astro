@@ -1,0 +1,8 @@
+---
+import HomePage from '../../components/HomePage.astro';
+export function getStaticPaths() {
+  return ['en', 'ru'].map((language) => ({ params: { language } }));
+}
+const language = Astro.params.language as 'en' | 'ru';
+---
+<HomePage language={language} />

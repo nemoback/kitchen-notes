@@ -1,0 +1,97 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { messages, localizedPath, type Language } from '../i18n';
+interface Props { language: Language; }
+const { language } = Astro.props;
+const t = messages[language];
+---
+
+<BaseLayout
+  language={language}
+  title={`${t.kitchen} — KitchenNotes`}
+  description={t.kitchenDescription}
+>
+  <div class="kitchen-page">
+    <section class="kitchen-hero section-wrap" aria-labelledby="kitchen-title">
+      <div class="kitchen-intro">
+        <div class="eyebrow">{t.kitchen}</div>
+        <h1 id="kitchen-title">{t.kitchenOne}<br /><em>{t.kitchenTwo}</em></h1>
+        <p class="kitchen-lede">{t.kitchenLede}</p>
+        <a class="kitchen-link" href={`${localizedPath(language)}#recipes`}>{t.browseOurs} <span aria-hidden="true">→</span></a>
+      </div>
+      <figure class="kitchen-photo">
+        <img src="/images/our-kitchen-family.jpg" alt={t.familyAlt} fetchpriority="high" />
+        <figcaption>{t.familyCaption}</figcaption>
+      </figure>
+    </section>
+
+    <section class="kitchen-story section-wrap" aria-labelledby="story-title">
+      <div>
+        <div class="eyebrow">{t.about}</div>
+        <h2 id="story-title">{t.storyOne}<br /><em>{t.storyTwo}</em></h2>
+      </div>
+      <div class="story-copy">
+        {t.storyParagraphs.map((paragraph) => <p>{paragraph}</p>)}
+      </div>
+    </section>
+
+    <section class="kitchen-values" aria-labelledby="values-title">
+      <div class="section-wrap values-inner">
+        <div class="values-heading">
+          <div class="eyebrow">{t.wayWeCook}</div>
+          <h2 id="values-title">{t.valuesTitle}</h2>
+        </div>
+        <div class="values-grid">
+          {t.values.map((value, index) => <article><span>{String(index + 1).padStart(2, '0')}</span><h3>{value.title}</h3><p>{value.text}</p></article>)}
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .kitchen-page { padding-bottom: 86px; }
+  .kitchen-hero { display: grid; grid-template-columns: .82fr 1.18fr; align-items: center; gap: 64px; padding-top: 68px; padding-bottom: 68px; }
+  .kitchen-intro h1 { margin: 24px 0 22px; color: var(--ink); font: 500 clamp(48px, 5.3vw, 70px)/1.04 var(--serif); letter-spacing: -2.6px; }
+  .kitchen-intro h1 em, .kitchen-story h2 em { color: var(--brand); font-weight: 500; }
+  .kitchen-lede { max-width: 390px; margin: 0; color: var(--muted); font-size: 15px; line-height: 1.85; }
+  .kitchen-link { display: inline-flex; align-items: center; gap: 22px; margin-top: 28px; padding-bottom: 8px; border-bottom: 1px solid var(--brand-light); color: var(--brand); font-size: 12px; font-weight: 700; }
+  .kitchen-link span { color: var(--accent); font-size: 16px; transition: transform .2s ease; }
+  .kitchen-link:hover span { transform: translateX(4px); }
+  .kitchen-photo { position: relative; height: min(42vw, 530px); min-height: 390px; margin: 0; overflow: hidden; border-radius: var(--card-radius); background: var(--soft-panel); }
+  .kitchen-photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 48%; }
+  .kitchen-photo figcaption { position: absolute; right: 0; bottom: 0; padding: 11px 15px; background: var(--paper); color: var(--brand); font-size: 9px; font-weight: 700; letter-spacing: .07em; }
+  .kitchen-story { display: grid; grid-template-columns: .82fr 1.18fr; gap: 64px; padding-top: 48px; padding-bottom: 86px; border-top: 1px solid var(--line); }
+  .kitchen-story h2, .values-heading h2 { margin: 13px 0 0; color: var(--ink); font: 500 clamp(34px, 4vw, 48px)/1.12 var(--serif); letter-spacing: -1.1px; }
+  .story-copy { max-width: 690px; }
+  .story-copy p { margin: 0 0 17px; color: var(--muted); font-size: 14px; line-height: 1.9; }
+  .story-copy p:last-child { margin-bottom: 0; }
+  .kitchen-values { padding: 57px 0 62px; background: var(--soft-panel); }
+  .values-heading { margin-bottom: 28px; }
+  .values-heading h2 { font-size: 38px; }
+  .values-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
+  .values-grid article { padding-top: 17px; border-top: 1px solid #cbbfd8; }
+  .values-grid article > span { color: var(--accent); font-size: 9px; font-weight: 700; letter-spacing: .14em; }
+  .values-grid h3 { margin: 13px 0 8px; color: var(--brand); font: 500 22px/1.2 var(--serif); }
+  .values-grid p { max-width: 290px; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.75; }
+  @media (max-width: 900px) {
+    .kitchen-hero { gap: 32px; grid-template-columns: 1fr; }
+    .kitchen-intro h1 { font-size: clamp(44px, 6vw, 60px); }
+    .kitchen-photo { height: min(62vw, 480px); min-height: 340px; }
+    .kitchen-story { gap: 35px; }
+  }
+  @media (max-width: 700px) {
+    .kitchen-page { padding-bottom: 54px; }
+    .kitchen-hero { grid-template-columns: 1fr; gap: 31px; padding-top: 49px; padding-bottom: 48px; }
+    .kitchen-intro h1 { margin: 19px 0 16px; font-size: 54px; letter-spacing: -2px; }
+    .kitchen-lede { font-size: 14px; }
+    .kitchen-photo { height: 340px; min-height: 0; }
+    .kitchen-story { grid-template-columns: 1fr; gap: 22px; padding-top: 35px; padding-bottom: 53px; }
+    .kitchen-story h2 { font-size: 37px; }
+    .story-copy p { font-size: 13px; }
+    .kitchen-values { padding: 42px 0 45px; }
+    .values-heading h2 { font-size: 33px; }
+    .values-grid { grid-template-columns: 1fr; gap: 23px; }
+    .values-grid p { max-width: none; }
+  }
+</style>

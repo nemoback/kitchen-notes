@@ -1,0 +1,8 @@
+---
+import KitchenPage from '../../components/KitchenPage.astro';
+export function getStaticPaths() {
+  return ['en', 'ru'].map((language) => ({ params: { language } }));
+}
+const language = Astro.params.language as 'en' | 'ru';
+---
+<KitchenPage language={language} />
