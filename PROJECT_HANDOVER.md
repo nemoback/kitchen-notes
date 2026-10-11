@@ -27,6 +27,8 @@ The private source repository is https://github.com/nemoback/kitchen-notes. GitH
 
 There is exactly one search field, in the header. English placeholder: “Find a recipe or ingredient”; Czech and Russian equivalents are in `src/i18n.ts`.
 
+The user requested that desktop search sit close to the language buttons. Keep these controls together with the header's normal gap; mobile search occupies its own full-width row.
+
 The user initially requested live results, then explicitly reversed that decision. **Search runs only on Enter/form submission.** Do not restore live filtering while typing, a suggestions dropdown, a second search field in the collection, or navigation triggered by deleting text.
 
 The header uses a GET form to the current language's home page with `q`. Home page JavaScript filters the recipe cards and scrolls to the collection after a submitted nonempty query. Category filters combine with submitted search. Language buttons preserve the query/hash and equivalent page.

@@ -177,6 +177,9 @@ button {
   margin-left: 0;
 }
 .header-inner { gap: 24px; }
+@media (min-width: 901px) {
+  .main-nav, .header-search { margin-left: auto; }
+}
 .brand, .language-switcher { flex-shrink: 0; }
 .main-nav a { white-space: nowrap; }
 .language-switcher { display: flex; align-items: center; gap: 3px; }
