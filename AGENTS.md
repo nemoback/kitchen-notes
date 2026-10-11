@@ -1,5 +1,7 @@
 # KitchenNotes project workflow
 
+Read `PROJECT_HANDOVER.md` before making changes. It records the project history, user decisions, architecture, and current behavior. Update it when features or decisions change.
+
 Use the connected private GitHub repository as the source of version history for this website. Preserve the current Czech default, English and Russian translations, and Lavender & Charcoal design unless the user requests changes.
 
 For future features and fixes, use a descriptive Git branch, commit the changes, and push the branch to the configured GitHub remote. Prefer a pull request for review. Do not merge or deploy unless the user authorizes it.

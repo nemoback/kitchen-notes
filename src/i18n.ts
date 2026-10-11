@@ -13,7 +13,7 @@ export function unlocalizedPath(path: string) {
 const en = {
   siteTitle: 'KitchenNotes — recipes for real life', siteDescription: 'A considered collection of recipes for the everyday table.',
   skip: 'Skip to content', homeLabel: 'KitchenNotes home', navigation: 'Main navigation', recipes: 'Recipes', kitchen: 'Our kitchen',
-  search: 'Find a recipe or ingredient', menu: 'Open navigation', language: 'Choose language',
+  search: 'Find a recipe or ingredient', menu: 'Open navigation', closeMenu: 'Close navigation', language: 'Choose language',
   footerOne: 'Good food, shared often.', footerTwo: 'A little inspiration for your everyday table.', backTop: 'Back to top ↑', footerNote: 'Made for the joy of gathering.',
   heroEyebrow: 'A little something for the table', heroOne: 'Make room', heroTwo: 'for something', heroThree: 'good.',
   heroIntro: 'Recipes worth slowing down for — and simple enough to make any day feel like an occasion.', explore: 'Explore the recipes',
@@ -48,7 +48,7 @@ const en = {
 const cs: typeof en = {
   siteTitle: 'KitchenNotes — recepty pro každý den', siteDescription: 'Pečlivě vybrané recepty pro každodenní vaření.',
   skip: 'Přejít na obsah', homeLabel: 'KitchenNotes — úvodní stránka', navigation: 'Hlavní navigace', recipes: 'Recepty', kitchen: 'Naše kuchyně',
-  search: 'Najít recept nebo surovinu', menu: 'Otevřít navigaci', language: 'Vybrat jazyk',
+  search: 'Najít recept nebo surovinu', menu: 'Otevřít navigaci', closeMenu: 'Zavřít navigaci', language: 'Vybrat jazyk',
   footerOne: 'Dobré jídlo chutná nejlépe společně.', footerTwo: 'Trocha inspirace pro váš každodenní stůl.', backTop: 'Zpět nahoru ↑', footerNote: 'Pro radost ze společných chvil.',
   heroEyebrow: 'Něco dobrého na stůl', heroOne: 'Místo pro', heroTwo: 'něco', heroThree: 'dobrého.',
   heroIntro: 'Recepty, u kterých stojí za to zpomalit — a které promění obyčejný den v malou slavnost.', explore: 'Prohlédnout recepty',
@@ -83,7 +83,7 @@ const cs: typeof en = {
 const ru: typeof en = {
   siteTitle: 'KitchenNotes — рецепты на каждый день', siteDescription: 'Продуманная подборка рецептов для повседневного стола.',
   skip: 'Перейти к содержимому', homeLabel: 'KitchenNotes — главная', navigation: 'Основная навигация', recipes: 'Рецепты', kitchen: 'Наша кухня',
-  search: 'Найти рецепт или ингредиент', menu: 'Открыть навигацию', language: 'Выбрать язык',
+  search: 'Найти рецепт или ингредиент', menu: 'Открыть навигацию', closeMenu: 'Закрыть навигацию', language: 'Выбрать язык',
   footerOne: 'Хорошая еда объединяет.', footerTwo: 'Немного вдохновения для вашего стола.', backTop: 'Наверх ↑', footerNote: 'Ради радости быть вместе.',
   heroEyebrow: 'Что-нибудь вкусное к столу', heroOne: 'Место для', heroTwo: 'чего-нибудь', heroThree: 'вкусного.',
   heroIntro: 'Рецепты, ради которых хочется замедлиться — и которые легко превращают обычный день в маленький праздник.', explore: 'Посмотреть рецепты',

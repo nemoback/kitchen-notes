@@ -5,7 +5,7 @@ export function matchesRecipe(recipe, term, filter) {
   const title = recipe.title ?? "";
   const ingredients = recipe.ingredients ?? "";
   const tagText = recipe.tags ?? "";
-  const searchable = normalize(`${title} ${ingredients} ${recipe.searchTags ?? tagText}`);
+  const searchable = normalize(`${title} ${ingredients} ${recipe.searchTags ?? tagText} ${recipe.searchAliases ?? ""}`);
   const tags = tagText
     .split(/\s+/)
     .map((tag) => tag.toLowerCase())

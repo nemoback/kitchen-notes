@@ -30,8 +30,10 @@ The site uses the Lavender & Charcoal visual theme throughout. Recipe text, sear
 
 ## Languages
 
-Czech is the default at `/`. English uses `/en/` and Russian uses `/ru/`. The header language buttons open the equivalent page or recipe, preserving submitted search parameters. Navigation, editorial text, metadata, image descriptions, and every recipe are translated. Search runs when the form is submitted with Enter and searches content in the current language; Czech accents are optional in queries.
+Czech is the default at `/`. English uses `/en/` and Russian uses `/ru/`. The header language buttons open the equivalent page or recipe, preserving submitted search parameters. Navigation, editorial text, metadata, image descriptions, and every recipe are translated. Search runs when the form is submitted with Enter. It searches recipe titles, ingredients, and tags across all three translations, so changing language preserves matching results; Czech accents are optional in queries.
 
 Interface translations live in `src/i18n.ts`. Recipe translations remain separate Markdown files with identical ingredient quantities and shared local photographs. Keep category and tag keys in English in frontmatter; their display labels are translated centrally, so category filtering stays consistent. The original Russian apple recipe retains all 12 steps and photos in every language.
 
-The pre-language version is saved in `backups/website-before-new-feature-2026-10-10_12-33-54/`.
+Version history is kept in Git and the private GitHub repository. Local backup folders have been removed.
+
+For project history, user preferences, implementation details, and future development guidance, read [PROJECT_HANDOVER.md](PROJECT_HANDOVER.md).

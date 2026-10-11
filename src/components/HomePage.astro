@@ -5,10 +5,16 @@ import { messages, categoryLabel, localizedPath, type Language } from '../i18n';
 interface Props { language: Language; }
 const { language } = Astro.props;
 const t = messages[language];
-const recipes = await getCollection('recipes', ({ data }) => data.language === language);
+const allRecipes = await getCollection('recipes');
+const recipes = allRecipes.filter(({ data }) => data.language === language);
+const searchAliases = new Map(recipes.map(({ data }) => [data.translationKey, allRecipes
+  .filter((entry) => entry.data.translationKey === data.translationKey)
+  .map(({ data: translation }) => [translation.title, ...translation.ingredients.map((ingredient) => ingredient.item), ...translation.tags.map((tag) => categoryLabel(translation.language, tag))].join(' '))
+  .join(' ')]));
 const featured = recipes.find((recipe) => recipe.data.featured) ?? recipes[0];
 const sortedRecipes = [...recipes].sort((a,b) => Number(b.data.featured)-Number(a.data.featured));
-const categories = ['All recipes', 'Breakfast', 'Lunch', 'Dinner', 'Dessert', 'Vegetarian', 'Quick'];
+const categories = ['All recipes', 'Breakfast', 'Lunch', 'Dinner', 'Dessert', 'Vegetarian', 'Quick']
+  .filter((category) => category === 'All recipes' || recipes.some(({ data }) => data.category === category || data.tags.includes(category)));
 ---
 <BaseLayout language={language}>
   <section class="hero section-wrap" aria-labelledby="hero-title">
@@ -40,7 +46,7 @@ const categories = ['All recipes', 'Breakfast', 'Lunch', 'Dinner', 'Dessert', 'V
     </div>
     <p class="results-count" aria-live="polite">{t.countLabel} <span id="recipe-count">{recipes.length}</span></p>
     <div class="recipe-grid" id="recipe-grid">
-      {sortedRecipes.map((recipe, index) => <a class="recipe-card" href={localizedPath(language, `/recipes/${recipe.data.translationKey}/`)} data-title={recipe.data.title.toLowerCase()} data-ingredients={recipe.data.ingredients.map(i=>i.item).join(' ').toLowerCase()} data-category={recipe.data.category} data-tags={recipe.data.tags.join(' ')} data-search-tags={recipe.data.tags.map(tag => categoryLabel(language, tag)).join(' ')} style={`--card-index:${index}`}>
+      {sortedRecipes.map((recipe, index) => <a class="recipe-card" href={localizedPath(language, `/recipes/${recipe.data.translationKey}/`)} data-search-aliases={searchAliases.get(recipe.data.translationKey)} data-title={recipe.data.title.toLowerCase()} data-ingredients={recipe.data.ingredients.map(i=>i.item).join(' ').toLowerCase()} data-category={recipe.data.category} data-tags={recipe.data.tags.join(' ')} data-search-tags={recipe.data.tags.map(tag => categoryLabel(language, tag)).join(' ')} style={`--card-index:${index}`}>
         <div class="card-image-wrap"><img src={recipe.data.image} alt={recipe.data.imageAlt} loading="lazy" /><span class="card-category">{categoryLabel(language, recipe.data.category)}</span><span class="card-arrow" aria-hidden="true">↗</span></div>
         <div class="card-copy"><div class="card-meta"><span>{recipe.data.prepTime + recipe.data.cookTime} {t.minutes} {t.total}</span><span class="meta-dot">·</span><span>{categoryLabel(language, recipe.data.tags[0] ?? '').toUpperCase()}</span></div><h3>{recipe.data.title}</h3><p>{recipe.data.description}</p><div class="card-bottom"><span>{t.prep} {recipe.data.prepTime} {t.minutes} <i>·</i> {t.cook} {recipe.data.cookTime} {t.minutes}</span><span class="card-read">{t.getCooking} <b>→</b></span></div></div>
       </a>)}
@@ -433,6 +439,13 @@ const categories = ['All recipes', 'Breakfast', 'Lunch', 'Dinner', 'Dessert', 'V
     gap: 28px;
     min-height: 550px;
   }
+  .hero-caption {
+    position: static;
+    writing-mode: horizontal-tb;
+    transform: none;
+    margin-top: 14px;
+  }
+  .caption-line { width: 24px; height: 1px; }
   .hero-photo-wrap {
     height: 400px;
   }
