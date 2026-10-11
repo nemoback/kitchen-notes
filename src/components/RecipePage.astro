@@ -1,6 +1,7 @@
 ---
 import { render, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { assetPath } from '../paths';
 import { messages, localizedPath, categoryLabel } from '../i18n';
 interface Props { recipe: CollectionEntry<'recipes'>; }
 const { recipe } = Astro.props;
@@ -14,10 +15,10 @@ const labels = {
   keepGoing: t.keepGoing, more: t.more, browse: t.browseAll,
 };
 const recipeJsonLd = {
-  '@context': 'https://schema.org', '@type': 'Recipe', name: title, description, image,
+  '@context': 'https://schema.org', '@type': 'Recipe', name: title, description, image: new URL(assetPath(image), Astro.site ?? Astro.url).href,
   inLanguage: language, recipeCategory: categoryLabel(language, category), prepTime: `PT${prepTime}M`, cookTime: `PT${cookTime}M`,
   recipeIngredient: ingredients.map((i) => `${i.amount ?? ''} ${i.unit ?? ''} ${i.item}`.trim()),
-  recipeInstructions: instructions.map((text, i) => ({ '@type': 'HowToStep', position: i + 1, text, ...(instructionImages?.[i] ? { image: instructionImages[i].image } : {}) })),
+  recipeInstructions: instructions.map((text, i) => ({ '@type': 'HowToStep', position: i + 1, text, ...(instructionImages?.[i] ? { image: new URL(assetPath(instructionImages[i].image), Astro.site ?? Astro.url).href } : {}) })),
 };
 ---
 <BaseLayout language={language} title={`${title} — KitchenNotes`} description={description}>
@@ -26,7 +27,7 @@ const recipeJsonLd = {
     <div class="recipe-breadcrumb section-wrap"><a href={localizedPath(language)}>{labels.home}</a><span>/</span><a href={`${localizedPath(language)}#recipes`}>{labels.recipes}</a><span>/</span><span>{title}</span></div>
     <section class="recipe-hero section-wrap">
       <div class="recipe-heading"><div class="eyebrow">{categoryLabel(language, category)} <span class="heading-dot">·</span> {tags.map(tag => categoryLabel(language, tag)).join(' / ')}</div><h1>{title}</h1><p>{description}</p><div class="recipe-time-row"><div><span class="time-icon">◷</span><span>{labels.prep}</span><strong>{prepTime} {labels.minutes}</strong></div><span class="time-divider"></span><div><span class="time-icon">◴</span><span>{labels.cook}</span><strong>{cookTime} {labels.minutes}</strong></div><span class="time-divider"></span><div><span class="time-icon">✳</span><span>{labels.total}</span><strong>{prepTime + cookTime} {labels.minutes}</strong></div></div></div>
-      <div class="recipe-hero-image"><img src={image} alt={imageAlt} fetchpriority="high" /><span class="image-caption">{labels.caption}</span></div>
+      <div class="recipe-hero-image"><img src={assetPath(image)} alt={imageAlt} fetchpriority="high" /><span class="image-caption">{labels.caption}</span></div>
     </section>
     <div class="recipe-content section-wrap">
       <aside class="ingredients-panel" aria-labelledby="ingredients-title"><div class="panel-heading"><div><div class="eyebrow">{labels.gather}</div><h2 id="ingredients-title">{labels.ingredients}</h2></div><span class="ingredient-spark" aria-hidden="true">✳</span></div>
@@ -35,7 +36,7 @@ const recipeJsonLd = {
       </aside>
       <article class="method-panel"><div class="panel-heading method-heading"><div><div class="eyebrow">{labels.takeTime}</div><h2>{labels.method}</h2></div><span class="method-count">{String(instructions.length).padStart(2, '0')} {labels.steps}</span></div>
         <div class="recipe-prose"><Content /></div>
-        <ol class="method-list">{instructions.map((instruction, i) => <li><span class="step-number">{String(i + 1).padStart(2, '0')}</span><div class="method-step"><p>{instruction}</p>{instructionImages?.[i] && <img class="step-photo" src={instructionImages[i].image} alt={instructionImages[i].imageAlt} loading="lazy" decoding="async" width="690" height="430" />}</div></li>)}</ol>
+        <ol class="method-list">{instructions.map((instruction, i) => <li><span class="step-number">{String(i + 1).padStart(2, '0')}</span><div class="method-step"><p>{instruction}</p>{instructionImages?.[i] && <img class="step-photo" src={assetPath(instructionImages[i].image)} alt={instructionImages[i].imageAlt} loading="lazy" decoding="async" width="690" height="430" />}</div></li>)}</ol>
         <div class="recipe-endnote"><span aria-hidden="true">✳</span><p>{labels.endnote}</p></div>
       </article>
     </div>

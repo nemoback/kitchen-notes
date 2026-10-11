@@ -17,8 +17,8 @@ const homePath = localizedPath(language);
     <meta name="theme-color" content="#f6f2fa" />
     <meta name="description" content={description} />
     <title>{title}</title>
-    {languages.map((lang) => <link rel="alternate" hreflang={lang} href={localizedPath(lang, pagePath)} />)}
-    <link rel="alternate" hreflang="x-default" href={localizedPath('cs', pagePath)} />
+    {languages.map((lang) => <link rel="alternate" hreflang={lang} href={new URL(localizedPath(lang, pagePath), Astro.site ?? Astro.url)} />)}
+    <link rel="alternate" hreflang="x-default" href={new URL(localizedPath('cs', pagePath), Astro.site ?? Astro.url)} />
     <slot name="head" />
   </head>
   <body>

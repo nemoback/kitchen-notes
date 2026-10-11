@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { assetPath } from '../paths';
 import { messages, categoryLabel, localizedPath, type Language } from '../i18n';
 interface Props { language: Language; }
 const { language } = Astro.props;
@@ -26,7 +27,7 @@ const categories = ['All recipes', 'Breakfast', 'Lunch', 'Dinner', 'Dessert', 'V
       <div class="hero-note"><span class="note-star">✳</span><span>{t.noteOne}<br /><strong>{t.noteTwo}</strong></span></div>
     </div>
     <div class="hero-visual">
-      <div class="hero-photo-wrap"><img class="hero-photo" src={featured.data.image} alt={featured.data.imageAlt} fetchpriority="high" /></div>
+      <div class="hero-photo-wrap"><img class="hero-photo" src={assetPath(featured.data.image)} alt={featured.data.imageAlt} fetchpriority="high" /></div>
       <div class="hero-photo-label"><span>{t.weekTable}</span><span>014&nbsp; · &nbsp;{categoryLabel(language, featured.data.category).toUpperCase()}</span></div>
       <div class="hero-caption"><span class="caption-line"></span><span>{t.caption}</span></div>
     </div>
@@ -47,7 +48,7 @@ const categories = ['All recipes', 'Breakfast', 'Lunch', 'Dinner', 'Dessert', 'V
     <p class="results-count" aria-live="polite">{t.countLabel} <span id="recipe-count">{recipes.length}</span></p>
     <div class="recipe-grid" id="recipe-grid">
       {sortedRecipes.map((recipe, index) => <a class="recipe-card" href={localizedPath(language, `/recipes/${recipe.data.translationKey}/`)} data-search-aliases={searchAliases.get(recipe.data.translationKey)} data-title={recipe.data.title.toLowerCase()} data-ingredients={recipe.data.ingredients.map(i=>i.item).join(' ').toLowerCase()} data-category={recipe.data.category} data-tags={recipe.data.tags.join(' ')} data-search-tags={recipe.data.tags.map(tag => categoryLabel(language, tag)).join(' ')} style={`--card-index:${index}`}>
-        <div class="card-image-wrap"><img src={recipe.data.image} alt={recipe.data.imageAlt} loading="lazy" /><span class="card-category">{categoryLabel(language, recipe.data.category)}</span><span class="card-arrow" aria-hidden="true">↗</span></div>
+        <div class="card-image-wrap"><img src={assetPath(recipe.data.image)} alt={recipe.data.imageAlt} loading="lazy" /><span class="card-category">{categoryLabel(language, recipe.data.category)}</span><span class="card-arrow" aria-hidden="true">↗</span></div>
         <div class="card-copy"><div class="card-meta"><span>{recipe.data.prepTime + recipe.data.cookTime} {t.minutes} {t.total}</span><span class="meta-dot">·</span><span>{categoryLabel(language, recipe.data.tags[0] ?? '').toUpperCase()}</span></div><h3>{recipe.data.title}</h3><p>{recipe.data.description}</p><div class="card-bottom"><span>{t.prep} {recipe.data.prepTime} {t.minutes} <i>·</i> {t.cook} {recipe.data.cookTime} {t.minutes}</span><span class="card-read">{t.getCooking} <b>→</b></span></div></div>
       </a>)}
     </div>

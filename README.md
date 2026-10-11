@@ -1,6 +1,6 @@
 # KitchenNotes
 
-Private source repository: [nemoback/kitchen-notes](https://github.com/nemoback/kitchen-notes).
+Source repository: [nemoback/kitchen-notes](https://github.com/nemoback/kitchen-notes).
 
 A responsive recipe discovery site built with Astro. Recipe entries live in `src/content/recipes/` as Markdown files with validated YAML frontmatter.
 
@@ -37,3 +37,18 @@ Interface translations live in `src/i18n.ts`. Recipe translations remain separat
 Version history is kept in Git and the private GitHub repository. Local backup folders have been removed.
 
 For project history, user preferences, implementation details, and future development guidance, read [PROJECT_HANDOVER.md](PROJECT_HANDOVER.md).
+
+## GitHub Pages
+
+Deployment target: https://nemoback.github.io/kitchen-notes/. The user authorized making the repository public to use free GitHub Pages. In repository Settings → Pages, use **GitHub Actions** as the source. The workflow in `.github/workflows/deploy.yml` checks, builds, and deploys changes pushed to `main`; it can also be started manually.
+
+Local development stays at `/`. To build the Pages version locally:
+
+```sh
+SITE_BASE_PATH=/kitchen-notes/ pnpm build
+SITE_BASE_PATH=/kitchen-notes/ pnpm preview
+```
+
+Preview it at `http://localhost:4321/kitchen-notes/` (or the port printed by Astro). `SITE_URL` can override the production origin; `SITE_BASE_PATH` controls the deployment prefix. Shared path helpers prefix internal links and recipe images, and Vite bundles/rebases font URLs. Markdown photo paths stay `/images/...`.
+
+New recipes publish after their Markdown files are committed, pushed, and merged into `main`. Deployment status is visible in GitHub Actions.

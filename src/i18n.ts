@@ -1,13 +1,15 @@
+import { assetPath, stripBase } from './paths';
+
 export const languages = ['cs', 'en', 'ru'] as const;
 export type Language = typeof languages[number];
 export const languageNames = { cs: 'Čeština', en: 'English', ru: 'Русский' };
 
 export function localizedPath(language: Language, path = '/') {
-  return `${language === 'cs' ? '' : `/${language}`}${path}`;
+  return assetPath(`${language === 'cs' ? '' : `/${language}`}${path}`);
 }
 
 export function unlocalizedPath(path: string) {
-  return path.replace(/^\/(en|ru)(?=\/|$)/, '') || '/';
+  return stripBase(path).replace(/^\/(en|ru)(?=\/|$)/, '') || '/';
 }
 
 const en = {
