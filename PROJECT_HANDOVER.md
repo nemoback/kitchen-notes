@@ -1,6 +1,6 @@
 # KitchenNotes — project handover
 
-Last updated: 2026-10-11. Read this together with `AGENTS.md` before working on the project. This is a maintained summary of project decisions, not a verbatim chat transcript. Check the actual code and Git history for exact implementation details.
+Last updated: 2026-10-15. Read this together with `AGENTS.md` before working on the project. This is a maintained summary of project decisions, not a verbatim chat transcript. Check the actual code and Git history for exact implementation details.
 
 ## Project and user intent
 
@@ -43,13 +43,14 @@ The user removed servings controls and automatic ingredient scaling everywhere. 
 
 Recipe pages show a photo, description, preparation/cooking/total times, ingredients, numbered instructions, optional step photos, and editorial Markdown body. Content schema is `src/content.config.ts`.
 
-There are currently five recipes in each of three languages (15 Markdown files):
+There are currently six recipes in each of three languages (18 Markdown files):
 
 - `creamy-tomato-pasta`
 - `apple-lattice-pie`
 - `chickpea-coconut-curry`
 - `herb-roasted-salmon`
 - `lemony-green-salad`
+- `spaghetti-bolognese`
 
 The user explicitly removed these recipes from all languages: slow-roasted tomato soup, crispy mushroom toast, Sunday buttermilk pancakes, pear and almond tart. Some unused image assets may remain; do not recreate the recipes simply because their images exist.
 
@@ -122,3 +123,7 @@ Astro's `SITE_URL` defaults to `https://nemoback.github.io`; `SITE_BASE_PATH` de
 Future commits to `main` deploy automatically. This authorization applies to the requested first publication; follow the user's instructions for later merges/deployments. Do not switch visibility back or change the hosting address without discussing it.
 
 GitHub repository visibility was changed to public and Pages source set to GitHub Actions on 2026-10-11. PR #2 was merged for the first deployment. The first Actions build revealed an invalid pre-existing pnpm workspace template (missing packages and placeholder build approvals); `pnpm-workspace.yaml` now declares the root package and the esbuild/sharp build dependencies. Check Actions for final deployment status.
+
+## Recipe addition — 2026-10-15
+
+Added `spaghetti-bolognese` in Czech, English, and Russian, adapted from https://www.gastronom.ru/recipe/22114/spagetti-boloneze by Natalia Gladchenko. Ingredient quantities and the eight-step sequence follow the source; instructions are rewritten, all eight step photos and a cover photo are local WebP assets, and each translation credits the recipe author/publisher. The source gives one hour total; the 10/50 preparation/cooking split is explicitly marked as an estimate. No servings controls were added. The addition is proposed on a branch/PR; do not assume it is deployed until merged.
