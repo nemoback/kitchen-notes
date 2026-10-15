@@ -51,4 +51,4 @@ SITE_BASE_PATH=/kitchen-notes/ pnpm preview
 
 Preview it at `http://localhost:4321/kitchen-notes/` (or the port printed by Astro). `SITE_URL` can override the production origin; `SITE_BASE_PATH` controls the deployment prefix. Shared path helpers prefix internal links and recipe images, and Vite bundles/rebases font URLs. Markdown photo paths stay `/images/...`.
 
-New recipes publish after their Markdown files are committed, pushed, and merged into `main`. Deployment status is visible in GitHub Actions.
+New recipes publish after their Markdown files are committed and pushed directly to `main`. The user has authorized this routine workflow without pull-request approvals. Deployment status is visible in GitHub Actions.

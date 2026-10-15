@@ -4,7 +4,7 @@ Read `PROJECT_HANDOVER.md` before making changes. It records the project history
 
 Use the connected GitHub repository as the source of version history for this website. Preserve the current Czech default, English and Russian translations, and Lavender & Charcoal design unless the user requests changes.
 
-For future features and fixes, use a descriptive Git branch, commit the changes, and push the branch to the configured GitHub remote. Prefer a pull request for review. Do not merge or deploy unless the user authorizes it.
+For user-requested features, fixes, and content updates, work directly on the existing `main` branch, commit completed changes, and push to `origin/main`. The user explicitly authorized this workflow on 2026-10-15 and does not want recurring PR, merge, or deployment approval requests. A push to `main` automatically deploys through GitHub Pages; this routine deployment is authorized. Do not create a `master` branch, feature branch, or pull request unless the user specifically requests one. Preserve unrelated changes and synchronize with the remote before committing.
 
 Keep local backups, version snapshots, generated output, dependencies, preview captures, and credentials out of Git. Recipes live in Markdown under `src/content/recipes/cs`, `en`, and `ru`; preserve matching translation keys across languages.
 

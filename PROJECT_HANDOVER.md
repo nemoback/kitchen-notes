@@ -6,7 +6,7 @@ Last updated: 2026-10-15. Read this together with `AGENTS.md` before working on 
 
 KitchenNotes is a polished recipe discovery website with an editorial food magazine feel. The user wants easy recipe authoring in Markdown and a professional, responsive design. Markdown stores content; Astro, HTML, CSS, and small browser scripts provide the website. No backend, accounts, database, or external runtime services are currently needed.
 
-The source repository is https://github.com/nemoback/kitchen-notes. The user authorized making it public on 2026-10-11 to use free GitHub Pages. GitHub is the source of version history. Use descriptive branches, commits, and preferably pull requests. Do not merge or deploy without authorization. Do not recreate local backup folders: the user explicitly requested their removal after GitHub onboarding.
+The source repository is https://github.com/nemoback/kitchen-notes. The user authorized making it public on 2026-10-11 to use free GitHub Pages. GitHub is the source of version history. For user-requested work, commit and push directly to the existing `main` branch; routine GitHub Pages deployment is authorized. Do not require pull requests or repeated publishing approvals. This supersedes the earlier branch/PR workflow (user decision, 2026-10-15). Do not recreate local backup folders: the user explicitly requested their removal after GitHub onboarding.
 
 ## Design decisions and history
 
@@ -120,10 +120,14 @@ The user requested free hosting and explicitly chose a public repository. Target
 
 Astro's `SITE_URL` defaults to `https://nemoback.github.io`; `SITE_BASE_PATH` defaults to `/` for local development and is `/kitchen-notes/` in the deploy workflow. `src/paths.ts` supplies base-aware image/link helpers and base removal for language switching. Public font references are bundled and rebased by Vite. Recipe Markdown remains portable with `/images/...` paths. Production recipe JSON-LD and alternate language metadata use absolute URLs.
 
-Future commits to `main` deploy automatically. This authorization applies to the requested first publication; follow the user's instructions for later merges/deployments. Do not switch visibility back or change the hosting address without discussing it.
+Future commits to `main` deploy automatically. On 2026-10-15 the user authorized direct commits and pushes for requested changes and their automatic deployment, without recurring PR or publishing approvals. Do not switch visibility back or change the hosting address without discussing it.
 
 GitHub repository visibility was changed to public and Pages source set to GitHub Actions on 2026-10-11. PR #2 was merged for the first deployment. The first Actions build revealed an invalid pre-existing pnpm workspace template (missing packages and placeholder build approvals); `pnpm-workspace.yaml` now declares the root package and the esbuild/sharp build dependencies. Check Actions for final deployment status.
 
 ## Recipe addition — 2026-10-15
 
-Added `spaghetti-bolognese` in Czech, English, and Russian, adapted from https://www.gastronom.ru/recipe/22114/spagetti-boloneze by Natalia Gladchenko. Ingredient quantities and the eight-step sequence follow the source; instructions are rewritten, all eight step photos and a cover photo are local WebP assets, and each translation credits the recipe author/publisher. The source gives one hour total; the 10/50 preparation/cooking split is explicitly marked as an estimate. No servings controls were added. The addition is proposed on a branch/PR; do not assume it is deployed until merged.
+Added `spaghetti-bolognese` in Czech, English, and Russian, adapted from https://www.gastronom.ru/recipe/22114/spagetti-boloneze by Natalia Gladchenko. Ingredient quantities and the eight-step sequence follow the source; instructions are rewritten, all eight step photos and a cover photo are local WebP assets, and each translation credits the recipe author/publisher. The source gives one hour total; the 10/50 preparation/cooking split is explicitly marked as an estimate. No servings controls were added. PR #4 was merged into `main` (commit `598618b`), triggering automatic deployment.
+
+## Direct-to-main workflow — 2026-10-15
+
+The user explicitly asked to stop requesting PR approvals and to commit directly to the primary branch for future requested changes. The actual branch is `main`, not `master`; retain that name. Synchronize it, make the requested change, commit, and push to `origin/main`. Automatic Pages deployment is part of this authorization. Do not ask again for routine commits, pushes, merges, or publishing of requested website changes. Use a branch/PR only when the user explicitly asks. This supersedes older PR/approval guidance in previous chats and commits.
